@@ -1,4 +1,6 @@
 module Svm
+  class ParameterError < StandardError; end
+    
   class Problem
     attr_reader :num_samples
     attr_reader :num_features
@@ -54,7 +56,7 @@ module Svm
       param = Options.new(options)
       
       error = Svm.svm_check_parameter(problem_struct, param.parameter_struct)
-      raise error if error 
+      raise ParameterError.new("Error while training model. The parameters are not valid: #{error}") if error 
       
       model_pointer = Svm.svm_train(problem_struct.pointer, param.parameter_struct.pointer)
       model_struct = ModelStruct.new(model_pointer)

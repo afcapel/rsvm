@@ -24,4 +24,12 @@ describe Svm::Model do
     model.predict([-1, 0, -1]).must_equal(-1)
     model.predict([1,  0,  1]).must_equal(1)
   end
+  
+  it "must raise an exception if training parameters are not valid" do
+    
+    proc {
+      model = @problem.generate_model(:kernel_type => :linear, :c => -10)
+    }.must_raise Svm::ParameterError
+    
+  end
 end

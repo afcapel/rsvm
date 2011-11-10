@@ -10,21 +10,26 @@ module Svm
       @num_samples  = samples.size
       @num_features = samples[0][0].size
 
-      problem_struct[:length] = num_samples
-      problem_struct[:samples_ptr] = FFI::MemoryPointer.new(FFI::Pointer.size, num_samples)
+      problem_struct[:l] = num_samples
+      problem_struct[:svm_node] = FFI::MemoryPointer.new(FFI::Pointer, num_samples)
       problem_struct[:y] = FFI::MemoryPointer.new(FFI::Type::DOUBLE, num_samples)
 
       # Allocate memory for the samples
-      # There are num_samples each with num_features nodes
-
-      @nodes_ptr = FFI::MemoryPointer.new(NodeStruct, num_samples * num_features)
+      # There are num_samples each with num_features nodes 
 
       num_samples.times.each do |i|
-        sample_xs = samples[i].first
-        @problem_struct[:y].put_double(FFI::Type::DOUBLE.size * i, samples[i][1])
-
+        sample_xs    = samples[i].first
+        sample_value = samples[i][1]
+        
+        problem_struct[:y].put_double(FFI::Type::DOUBLE.size * i, sample_value)
+        
+        # Allocate memory for the sample
+        nodes_ptr = FFI::MemoryPointer.new(NodeStruct, num_features)
+        problem_struct[:svm_node].put_pointer(FFI::Pointer.size*i, nodes_ptr)
+        
+        
         num_features.times.each do |j|
-          node = NodeStruct.new(@nodes_ptr + (NodeStruct.size * num_features * i) + (NodeStruct.size * j))
+          node = NodeStruct.new(nodes_ptr + j * NodeStruct.size)
           node[:index] = j
           node[:value] = sample_xs[j]
         end
@@ -32,18 +37,31 @@ module Svm
     end
 
     def sample_pointer(index)
-      FFI::Pointer.new(problem_struct[:samples_ptr] + FFI::Pointer.size * index)
+      (problem_struct[:svm_node] + FFI::Pointer.size * index).get_pointer(0)
     end
 
     def value(index)
       problem_struct[:y].get_double(FFI::Type::DOUBLE.size * index)
     end
+    
+    def length
+      problem_struct[:l]
+    end
 
     def sample(index)
+      sample_ptr = sample_pointer(index)
+      
       num_features.times.collect do |j|
-        node = NodeStruct.new(@nodes_ptr + (NodeStruct.size * num_features * index) + (NodeStruct.size * j))
+        node = NodeStruct.new(sample_ptr + NodeStruct.size * j)
         node[:value]
       end
+    end
+    
+    def generate_model(options = {})
+      param = Options.new(options)
+      
+      Svm.svm_train(problem_struct.pointer, param.parameter_struct.pointer)
+      param.parameter_struct
     end
   end
 end

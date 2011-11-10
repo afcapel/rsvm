@@ -14,14 +14,14 @@ module Svm
   end
   
   class ProblemStruct < FFI::Struct
-    layout  :length,      :int,
+    layout  :l,           :int,
             :y,           :pointer,
-            :samples_ptr, :pointer
+            :svm_node,    :pointer
   end
   
   class ParameterStruct < FFI::Struct
-    layout :svm_type,     :int,
-           :kernel_type,  :int,
+    layout :svm_type,     :svm_type,
+           :kernel_type,  :kernel_type,
            :degree,       :int,
            :gamma,        :double,
            :coef0,        :double,
@@ -73,5 +73,5 @@ module Svm
   attach_function 'svm_check_probability_model', [:pointer,], :int
 end
 
-require_relative 'svm/node'
+require_relative 'svm/options'
 require_relative 'svm/problem'

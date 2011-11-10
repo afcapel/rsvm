@@ -8,6 +8,10 @@ describe Svm::Problem do
       [[-1, 0, -1], -1]
     ])
   end
+  
+  it "stores the samples length" do
+    @problem.length.must_equal(2)
+  end
     
   it "stores problem values" do
     @problem.value(0).must_equal(1.0)
@@ -17,5 +21,10 @@ describe Svm::Problem do
   it "stores samples features" do
     @problem.sample(0).must_equal([1, 0, 1])
     @problem.sample(1).must_equal([-1, 0, -1])
+  end
+  
+  it "can generate a model" do
+    model = @problem.generate_model
+    model.must_be_instance_of Svm::ParameterStruct
   end
 end

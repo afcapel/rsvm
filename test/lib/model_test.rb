@@ -4,8 +4,8 @@ describe Svm::Model do
   
   before do
     @problem = Svm::Problem.new([
-      [[1, 0, 1], 1],
-      [[-1, 0, -1], -1]
+      [1, 1, 0, 1],
+      [-1, -1, 0, -1]
     ])
   end
   

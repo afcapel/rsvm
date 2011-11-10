@@ -10,7 +10,7 @@ module Svm
       @problem_struct = ProblemStruct.new
 
       @num_samples  = samples.size
-      @num_features = samples[0][0].size
+      @num_features = samples.first.size - 1
 
       problem_struct[:l] = num_samples
       problem_struct[:svm_node] = FFI::MemoryPointer.new(FFI::Pointer, num_samples)
@@ -20,8 +20,11 @@ module Svm
       # There are num_samples each with num_features nodes 
 
       num_samples.times.each do |i|
-        sample_xs    = samples[i].first
-        sample_value = samples[i][1].to_f
+        sample = samples[i].dup.to_a
+        
+        sample_value = sample.first.to_f
+        sample_xs    = sample[1..sample.size-1]
+        
         
         problem_struct[:y].put_double(FFI::Type::DOUBLE.size * i, sample_value)
         

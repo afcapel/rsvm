@@ -25,6 +25,6 @@ describe Svm::Problem do
   
   it "can generate a model" do
     model = @problem.generate_model
-    model.must_be_instance_of Svm::ParameterStruct
+    model.must_be_instance_of Svm::Model
   end
 end

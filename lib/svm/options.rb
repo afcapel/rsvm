@@ -18,7 +18,7 @@ module Svm
       :probability      => 0,
       :nr_weight        => 0,
      # :weight_label     => (c_int*0)()
-    #  :weight           => (c_double*0)()
+     # :weight           => (c_double*0)()
       :cross_validation => false,
       :nr_fold          => 0
     }

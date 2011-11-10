@@ -11,6 +11,20 @@ module Svm
   class NodeStruct < FFI::Struct
     layout :index, :int,
            :value, :double
+    
+    def self.node_array_from(sample_xs)
+      num_features = sample_xs.size
+      
+      nodes_ptr = FFI::MemoryPointer.new(NodeStruct, num_features)
+      
+      num_features.times.each do |j|
+        node = NodeStruct.new(nodes_ptr + j * NodeStruct.size)
+        node[:index] = j
+        node[:value] = sample_xs[j]
+      end
+      
+      nodes_ptr
+    end
   end
   
   class ProblemStruct < FFI::Struct
@@ -75,3 +89,4 @@ end
 
 require_relative 'svm/options'
 require_relative 'svm/problem'
+require_relative 'svm/model'

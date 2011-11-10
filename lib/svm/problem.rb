@@ -24,15 +24,8 @@ module Svm
         problem_struct[:y].put_double(FFI::Type::DOUBLE.size * i, sample_value)
         
         # Allocate memory for the sample
-        nodes_ptr = FFI::MemoryPointer.new(NodeStruct, num_features)
+        nodes_ptr = NodeStruct.node_array_from(sample_xs)
         problem_struct[:svm_node].put_pointer(FFI::Pointer.size*i, nodes_ptr)
-        
-        
-        num_features.times.each do |j|
-          node = NodeStruct.new(nodes_ptr + j * NodeStruct.size)
-          node[:index] = j
-          node[:value] = sample_xs[j]
-        end
       end
     end
 
@@ -60,8 +53,9 @@ module Svm
     def generate_model(options = {})
       param = Options.new(options)
       
-      Svm.svm_train(problem_struct.pointer, param.parameter_struct.pointer)
-      param.parameter_struct
+      model_pointer = Svm.svm_train(problem_struct, param.parameter_struct)
+      model_struct = ModelStruct.new(model_pointer)
+      Model.new(model_struct)
     end
   end
 end

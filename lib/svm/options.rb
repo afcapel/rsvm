@@ -10,7 +10,7 @@ module Svm
       :gamma            => 0,
       :coef0            => 0,
       :nu               => 0.5,
-      :cache_size       => 100,
+      :cache_size       => 100.0,
       :c                => 1,
       :eps              => 0.001,
       :p                => 0.1,
@@ -19,7 +19,7 @@ module Svm
       :nr_weight        => 0,
      # :weight_label     => (c_int*0)()
      # :weight           => (c_double*0)()
-      :cross_validation => false,
+      :cross_validation => 0,
       :nr_fold          => 0
     }
     

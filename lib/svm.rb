@@ -15,13 +15,18 @@ module Svm
     def self.node_array_from(sample_xs)
       num_features = sample_xs.size
       
-      nodes_ptr = FFI::MemoryPointer.new(NodeStruct, num_features)
+      nodes_ptr = FFI::MemoryPointer.new(NodeStruct, num_features + 1)
       
       num_features.times.each do |j|
         node = NodeStruct.new(nodes_ptr + j * NodeStruct.size)
         node[:index] = j
-        node[:value] = sample_xs[j]
+        node[:value] = sample_xs[j].to_f
       end
+      
+      # Last node is a terminator. See libsvm README.
+      node = NodeStruct.new(nodes_ptr + num_features * NodeStruct.size)
+      node[:index] = -1
+      node[:value] = 0
       
       nodes_ptr
     end
@@ -52,16 +57,16 @@ module Svm
   end
   
   class ModelStruct < FFI::Struct
-    layout :param_ptr,   :pointer,
+    layout :param,       ParameterStruct,
            :nr_class,    :int,
            :l,           :int,
-           :node_ptr,    :pointer,
-           :sv_coef_ptr, :pointer,
-           :rho_ptr,     :pointer,
-           :probA_ptr,   :pointer,
-           :probB_ptr,   :pointer,
-           :labels_ptr,  :pointer,
-           :nSV_ptr,     :pointer,
+           :svm_node,    :pointer,
+           :sv_coef,     :pointer,
+           :rho,         :pointer,
+           :probA,       :pointer,
+           :probB,       :pointer,
+           :label,       :pointer,
+           :nSV,         :pointer,
            :free_sv,     :int
   end
   

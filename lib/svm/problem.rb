@@ -19,7 +19,7 @@ module Svm
 
       num_samples.times.each do |i|
         sample_xs    = samples[i].first
-        sample_value = samples[i][1]
+        sample_value = samples[i][1].to_f
         
         problem_struct[:y].put_double(FFI::Type::DOUBLE.size * i, sample_value)
         
@@ -53,8 +53,12 @@ module Svm
     def generate_model(options = {})
       param = Options.new(options)
       
-      model_pointer = Svm.svm_train(problem_struct, param.parameter_struct)
+      error = Svm.svm_check_parameter(problem_struct, param.parameter_struct)
+      raise error if error 
+      
+      model_pointer = Svm.svm_train(problem_struct.pointer, param.parameter_struct.pointer)
       model_struct = ModelStruct.new(model_pointer)
+      
       Model.new(model_struct)
     end
   end

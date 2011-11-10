@@ -95,3 +95,4 @@ end
 require_relative 'svm/options'
 require_relative 'svm/problem'
 require_relative 'svm/model'
+require_relative 'svm/scaler'

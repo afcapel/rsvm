@@ -1,8 +1,12 @@
 require "svm/version"
 require 'ffi'
 
+require_relative 'svm/debug'
+
 module Svm
   extend FFI::Library
+  extend Svm::Debug
+  
   ffi_lib "lib/libsvm.so.2"
   
   enum :svm_type, [:c_svc, :nu_svc, :one_class, :epsilon_svr, :nu_svr]
@@ -90,6 +94,15 @@ module Svm
   
   attach_function 'svm_check_parameter', [:pointer, :pointer ], :string
   attach_function 'svm_check_probability_model', [:pointer,], :int
+  attach_function 'svm_set_print_string_function', [:pointer,], :void
+    
+  
+  DebugCallback = FFI::Function.new(:void, [:string]) do |message|
+    print message if Svm.debug
+  end
+  
+  Svm.svm_set_print_string_function(DebugCallback)
+  Svm.debug = true
 end
 
 require_relative 'svm/options'

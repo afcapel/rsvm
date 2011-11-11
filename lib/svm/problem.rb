@@ -16,9 +16,6 @@ module Svm
       
       data = Scaler.scale(data)
       
-      puts "data #{data.size}"
-      puts "first row: #{data.first}"
-      
       self.new(data)
     end
 

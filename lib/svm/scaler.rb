@@ -8,18 +8,18 @@ module Svm
       instance = self.new(data)
       instance.scale!
       
-      instance
+      instance.data
     end
     
     def initialize(data)
       @data = data
       
       @num_samples = data.size
-      @num_features = data.first.size
+      @num_features = data.first.size - 1
     end
     
     def scale!
-      num_features.times.each do |i|
+      (1..num_features).each do |i|
         max = values_for_feature(i).max
         min = values_for_feature(i).min
         
@@ -30,7 +30,7 @@ module Svm
       end
       
       data.each do |sample|
-        num_features.times.each do |i|
+        (1..num_features).each do |i|
           new_value = sample[i] - zero[i]
           new_value = new_value / unit[i] unless unit[i] == 0
           sample[i] = new_value
@@ -40,6 +40,10 @@ module Svm
     
     def values_for_feature(i)
       @data.collect { |sample| sample[i] }
+    end
+    
+    def labels
+      values_for_feature 0
     end
     
     def unit

@@ -9,13 +9,12 @@ module Svm
     attr_reader :problem_struct
     
     
-    def self.load_from_csv(csv_path, scale = true)
+    def self.load_from_csv(csv_path, scale = true)      
       data = CSV.read(csv_path).collect do |row|
         row.collect { |field| field.to_f }
       end
       
-      data = Scaler.scale(data)
-      
+      data = Scaler.scale(data) if scale
       self.new(data)
     end
 
@@ -37,7 +36,6 @@ module Svm
         
         sample_value = sample.first
         sample_xs    = sample[1..sample.size-1]
-        
         
         problem_struct[:y].put_double(FFI::Type::DOUBLE.size * i, sample_value)
         

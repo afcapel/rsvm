@@ -29,6 +29,8 @@ describe Svm::Problem do
   end
   
   it "can perfom cross validation" do
+    GC.start # TODO: Investigate why this is needed. It randomly crashes without it.
+    
     csv_path = File.join(File.dirname(__FILE__), '..', 'fixtures', 'heart_scale.csv')
     
     problem = Svm::Problem.load_from_csv(csv_path)

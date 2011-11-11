@@ -57,10 +57,10 @@ module Svm
            :nu,           :double,
            :p,            :double,
            :shrinking,    :int,
-           :probability,  :int    
+           :probability,  :int   
   end
   
-  class ModelStruct < FFI::Struct
+  class ModelStruct < FFI::ManagedStruct
     layout :param,       ParameterStruct,
            :nr_class,    :int,
            :l,           :int,
@@ -72,6 +72,10 @@ module Svm
            :label,       :pointer,
            :nSV,         :pointer,
            :free_sv,     :int
+    
+    def self.release(ptr)
+      Svm.svm_free_model_content(ptr)
+    end
   end
   
   attach_function 'svm_train', [:pointer, :pointer], :pointer

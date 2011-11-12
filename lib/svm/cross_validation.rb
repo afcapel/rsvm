@@ -20,21 +20,21 @@ module Svm
       end
     end
     
-    def find_best_parameters
-      c_exponents = (1..5).to_a
-      gamma_exponents = (-5..3).to_a
+    def find_best_parameters(n_folds = 5)
+      c_exponents = (-5..15).to_a
+      gamma_exponents = (-15..3).to_a
       
       combinations = c_exponents.product(gamma_exponents)
       
       max = combinations.max_by do |comb|
-        c = 10 ** comb[0]
-        gamma = 10 ** comb[1]
+        c = 2 ** comb[0]
+        gamma = 2 ** comb[1]
         
-        accuracy_for_cross_validation(5, :c => c, :gamma => gamma)
+        accuracy_for_cross_validation(n_folds, :c => c, :gamma => gamma)
       end
       
-      c     = 10**max[0]
-      gamma = 10**max[1]
+      c     = 2**max[0]
+      gamma = 2**max[1]
       
       {:c => c, :gamma => gamma}
     end

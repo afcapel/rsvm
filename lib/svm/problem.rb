@@ -13,7 +13,7 @@ module Svm
     attr_reader :data
     attr_reader :options
     
-    def self.load_from_csv(csv_path, scale = true, options = {})
+    def self.load_from_csv(csv_path, scale = true, weight_labels = true, options = {})
       data = CSV.read(csv_path).collect do |row|
         row.collect { |field| field.to_f }
       end
@@ -21,6 +21,7 @@ module Svm
       instance = self.new
       
       instance.data = Scaler.scale(data) if scale
+      instance.label_weights = instance.suggested_labels_weights if weight_labels
       instance
     end
 
@@ -86,8 +87,7 @@ module Svm
     
     def suggested_labels_weights
       labels.inject({}) do |hash, label|
-        value = num_samples_for(label).to_f/num_samples
-        hash[label] = num_samples_for(label).to_f/num_samples
+        hash[label.to_i] = num_samples_for(label).to_f/num_samples
         hash
       end
     end
@@ -98,6 +98,10 @@ module Svm
     
     def labels
       num_samples.times.collect { |i| value(i) }.uniq
+    end
+    
+    def label_weights=(weights)
+      options.label_weights = weights
     end
     
     private

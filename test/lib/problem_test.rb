@@ -33,7 +33,7 @@ describe Svm::Problem do
   it "can suggets weights for labels" do
     @problem.labels.sort.must_equal [-1, 1]
     
-    @problem.suggested_labels_weights[1.0].must_equal(1.0/3)
-    @problem.suggested_labels_weights[-1.0].must_equal(2.0/3)
+    @problem.suggested_labels_weights[1].must_equal(1.0/3)
+    @problem.suggested_labels_weights[-1].must_equal(2.0/3)
   end
 end

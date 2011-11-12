@@ -106,11 +106,11 @@ module Svm
   end
   
   Svm.svm_set_print_string_function(DebugCallback)
-  Svm.debug = true
+  Svm.debug = false
 end
 
+require_relative 'svm/cross_validation'
 require_relative 'svm/options'
 require_relative 'svm/problem'
 require_relative 'svm/model'
 require_relative 'svm/scaler'
-require_relative 'svm/parameter_selector'

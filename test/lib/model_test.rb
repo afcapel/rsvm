@@ -4,10 +4,11 @@ require 'tempfile'
 describe Svm::Model do
   
   before do
-    @problem = Svm::Problem.new([
+    @problem = Svm::Problem.new
+    @problem.data = [
       [1, 1, 0, 1],
       [-1, -1, 0, -1]
-    ])
+    ]
   end
   
   it "stores the passed parameters" do

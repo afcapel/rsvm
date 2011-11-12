@@ -84,6 +84,22 @@ module Svm
       Model.new(model_struct)
     end
     
+    def suggested_labels_weights
+      labels.inject({}) do |hash, label|
+        value = num_samples_for(label).to_f/num_samples
+        hash[label] = num_samples_for(label).to_f/num_samples
+        hash
+      end
+    end
+    
+    def num_samples_for(label)
+      num_samples.times.count { |i| value(i) == label }
+    end
+    
+    def labels
+      num_samples.times.collect { |i| value(i) }.uniq
+    end
+    
     private
     
     def param_struct_from(options)

@@ -1,17 +1,18 @@
 module Svm
   module CrossValidation
     
-    def accuracy_for_cross_validation(n_folds = 5, options = {})
-      results = cross_validate(n_folds, options)
+    def accuracy_for_cross_validation(n_folds = 5, custom_options = nil)
+      results = cross_validate(n_folds, custom_options)
       
       num_samples.times.count { |i| value(i) == results[i] }.to_f/num_samples
     end
     
-    def cross_validate(n_folds = 5, options = {})
-      param = param_struct_from(options)
+    def cross_validate(n_folds = 5, more_options = nil)
+      set(more_options) if more_options
+      
       predicted_results_pointer = FFI::MemoryPointer.new(:double, num_samples)
       
-      Svm.svm_cross_validation(problem_struct.pointer, param.parameter_struct.pointer, n_folds, predicted_results_pointer)
+      Svm.svm_cross_validation(problem_struct, options.parameter_struct, n_folds, predicted_results_pointer)
       
       num_samples.times.inject([]) do |arr, i|
         result =  predicted_results_pointer.get_double(FFI::Type::DOUBLE.size * i)

@@ -1,8 +1,6 @@
 require 'csv'
 
 module Svm
-  class ParameterError < StandardError; end
-    
   class Problem
     include CrossValidation
     
@@ -13,7 +11,7 @@ module Svm
     attr_reader :data
     attr_reader :options
     
-    def self.load_from_csv(csv_path, scale = true, weight_labels = true, options = {})
+    def self.load_from_csv(csv_path, scale = true, weight_labels = false, options = {})
       data = CSV.read(csv_path).collect do |row|
         row.collect { |field| field.to_f }
       end
@@ -25,10 +23,10 @@ module Svm
       instance
     end
 
-    def initialize(options = {})
+    def initialize(user_options = {})
       @problem_struct = ProblemStruct.new
       @nodes_pointers = []
-      @options        = Options.new(options)
+      @options = Options.new(user_options)
     end
     
     def data=(samples)
@@ -76,10 +74,10 @@ module Svm
       problem_struct[:l]
     end
     
-    def generate_model(options = {})
-      param = param_struct_from(options)
-      
-      model_pointer = Svm.svm_train(problem_struct.pointer, param.parameter_struct.pointer)
+    def generate_model(more_options = {})
+      set(more_options)
+            
+      model_pointer = Svm.svm_train(problem_struct.pointer, options.parameter_struct.pointer)
       model_struct = ModelStruct.new(model_pointer)
       
       Model.new(model_struct)
@@ -87,7 +85,8 @@ module Svm
     
     def suggested_labels_weights
       labels.inject({}) do |hash, label|
-        hash[label.to_i] = num_samples_for(label).to_f/num_samples
+        num = num_samples_for(label).to_f
+        hash[label.to_i] = num/num_samples + 0.5
         hash
       end
     end
@@ -102,17 +101,26 @@ module Svm
     
     def label_weights=(weights)
       options.label_weights = weights
+      check_parameters!
+    end
+    
+    def estimate_probabilities=(option)
+      value = option ? 1 : 0
+      
+      options.parameter_struct[:probability] = 1
     end
     
     private
     
-    def param_struct_from(options)
-      param = Options.new(options)
-      
-      error = Svm.svm_check_parameter(problem_struct, param.parameter_struct)
-      raise ParameterError.new("The provided options are not valid: #{error}") if error
-      
-      param
+    def set(custom_options)
+      options.add(custom_options)
+      check_parameters!
     end
+    
+    def check_parameters!
+      error = Svm.svm_check_parameter(problem_struct, options.parameter_struct)
+      raise ParameterError.new("The provided options are not valid: #{error}") if error
+    end
+
   end
 end

@@ -14,11 +14,7 @@ module Svm
       
       Svm.svm_cross_validation(problem_struct, options.parameter_struct, n_folds, predicted_results_pointer)
       
-      num_samples.times.inject([]) do |arr, i|
-        result =  predicted_results_pointer.get_double(FFI::Type::DOUBLE.size * i)
-        arr << result
-        arr
-      end
+      predicted_results_pointer.read_array_of_double(num_samples)
     end
     
     def find_best_parameters(n_folds = 5)

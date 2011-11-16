@@ -19,7 +19,8 @@ module Svm
       :probability      => 0,
       :nr_weight        => 0,
       :cross_validation => 0,
-      :nr_fold          => 0
+      :nr_fold          => 0,
+      :scale            => true
     }
     
     def initialize(user_options = {})
@@ -28,6 +29,8 @@ module Svm
     end
     
     def add(more_options)
+      options_hash.merge!(more_options)
+      
       more_options.each do |key, value|
         parameter_struct[key] = value if parameter_struct.members.include?(key)
       end
@@ -45,6 +48,17 @@ module Svm
       
       parameter_struct[:weight_label].write_array_of_int(labels_array)
       parameter_struct[:weight].write_array_of_double(weights.values) 
+    end
+    
+    
+    def [](option)
+      options_hash[option]
+    end
+    
+    private
+    
+    def options_hash
+      @options_hash ||= {}
     end
   end
 end

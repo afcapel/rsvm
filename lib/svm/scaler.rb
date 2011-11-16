@@ -1,3 +1,5 @@
+require 'yaml'
+
 module Svm
   class Scaler
     attr_reader :data
@@ -8,7 +10,7 @@ module Svm
       instance = self.new(data)
       instance.scale!
       
-      instance.data
+      instance
     end
     
     def initialize(data)
@@ -29,13 +31,21 @@ module Svm
         zero[i] = min + unit[i]
       end
       
-      data.each do |sample|
-        (1..num_features).each do |i|
-          new_value = sample[i] - zero[i]
-          new_value = new_value / unit[i] unless unit[i] == 0
-          sample[i] = new_value
-        end
+      data.collect { |sample| scale(sample, true) }
+    end
+    
+    def scale(sample, with_labels = false)
+      # If the sample does't have label it should be accessed
+      # one more position to the left
+      offset = with_labels ? 0 : -1
+      
+      (1..num_features).each do |i|
+        new_value = sample[i+offset] - zero[i]
+        new_value = new_value / unit[i] unless unit[i] == 0
+        sample[i+offset] = new_value
       end
+      
+      sample
     end
     
     def values_for_feature(i)
@@ -52,6 +62,25 @@ module Svm
     
     def zero
       @zero ||= []
+    end
+    
+    # Release references to data so it can be garbage collected
+    def release_data!
+      @data = nil
+    end
+    
+    def to_yaml_properties
+      %w{ @num_features @unit @zero }
+    end
+    
+    def save(path)
+      File.open(path, 'w+') do |f|
+        f.write(YAML.dump(self))
+      end
+    end
+    
+    def self.load(path)
+      YAML.load(File.read(path))
     end
   end
 end

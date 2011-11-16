@@ -6,25 +6,24 @@ module Svm
     
     attr_reader :num_samples
     attr_reader :num_features
-    attr_reader :problem_struct
-    
-    attr_reader :data
     attr_reader :options
     
-    def self.load_from_csv(csv_path, scale = true, weight_labels = false, options = {})
+    attr_accessor :scaler
+    
+    def self.load_from_csv(csv_path, options = {})
       data = CSV.read(csv_path).collect do |row|
         row.collect { |field| field.to_f }
       end
       
       instance = self.new
+      instance.data = data
       
-      instance.data = Scaler.scale(data) if scale
-      instance.label_weights = instance.suggested_labels_weights if weight_labels
+      scale = options.delete(:scale)
+      
       instance
     end
 
     def initialize(user_options = {})
-      @problem_struct = ProblemStruct.new
       @nodes_pointers = []
       @options = Options.new(user_options)
     end
@@ -32,7 +31,12 @@ module Svm
     def data=(samples)
       @num_samples  = samples.size
       @num_features = samples.first.size - 1
-
+      
+      if options[:scale]
+        self.scaler = Scaler.scale(samples)
+        scaler.release_data!
+      end
+      
       problem_struct[:l] = num_samples
       problem_struct[:svm_node] = FFI::MemoryPointer.new(FFI::Pointer, num_samples)
       problem_struct[:y] = FFI::MemoryPointer.new(FFI::Type::DOUBLE, num_samples)
@@ -80,13 +84,16 @@ module Svm
       model_pointer = Svm.svm_train(problem_struct.pointer, options.parameter_struct.pointer)
       model_struct = ModelStruct.new(model_pointer)
       
-      Model.new(model_struct)
+      model = Model.new(model_struct)
+      model.scaler = scaler
+      
+      model
     end
     
     def suggested_labels_weights
       labels.inject({}) do |hash, label|
         num = num_samples_for(label).to_f
-        hash[label.to_i] = num/num_samples + 0.5
+        hash[label.to_i] = num/num_samples
         hash
       end
     end
@@ -107,14 +114,18 @@ module Svm
     def estimate_probabilities=(option)
       value = option ? 1 : 0
       
-      options.parameter_struct[:probability] = 1
+      options.parameter_struct[:probability] = value
     end
-    
-    private
     
     def set(custom_options)
       options.add(custom_options)
       check_parameters!
+    end
+    
+    private
+    
+    def problem_struct
+      @problem_struct ||= ProblemStruct.new
     end
     
     def check_parameters!

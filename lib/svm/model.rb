@@ -3,7 +3,8 @@ module Svm
   class ModelError < StandardError; end
   
   class Model
-    attr_reader :model_struct
+    attr_reader   :model_struct
+    attr_accessor :scaler
     
     def initialize(model_struct)
       @model_struct = model_struct
@@ -35,6 +36,8 @@ module Svm
     end
     
     def predict(sample)
+      scaler.scale(sample) if scaler
+      
       nodes_ptr = NodeStruct.node_array_from(sample)
       Svm.svm_predict(model_struct, nodes_ptr)
     end
@@ -43,6 +46,8 @@ module Svm
       unless Svm.svm_check_probability_model(model_struct) == 1
         raise ModelError.new("Model doesn't have probability info")
       end
+      
+      scaler.scale(sample) if scaler
       
       nodes_ptr = NodeStruct.node_array_from(sample)
       

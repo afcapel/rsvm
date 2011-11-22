@@ -15,10 +15,8 @@ module Svm
         row.collect { |field| field.to_f }
       end
       
-      instance = self.new
+      instance = self.new(options)
       instance.data = data
-      
-      scale = options.delete(:scale)
       
       instance
     end
@@ -109,6 +107,10 @@ module Svm
     def label_weights=(weights)
       options.label_weights = weights
       check_parameters!
+    end
+    
+    def weight_for(label)
+      options.weights[label] || 1.0
     end
     
     def estimate_probabilities=(option)

@@ -37,6 +37,8 @@ module Svm
     end
     
     def label_weights=(weights)
+      @weights = weights
+      
       num_labels = weights.keys.size
       
       parameter_struct[:nr_weight] = num_labels
@@ -50,6 +52,9 @@ module Svm
       parameter_struct[:weight].write_array_of_double(weights.values) 
     end
     
+    def weights
+      @weights ||= Hash.new(1.0)
+    end
     
     def [](option)
       options_hash[option]

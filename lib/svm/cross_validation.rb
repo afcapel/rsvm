@@ -1,10 +1,10 @@
 module Svm
   module CrossValidation
     
-    def accuracy_for_cross_validation(n_folds = 5, custom_options = nil)
+    def results_for_cross_validation(n_folds = 5, custom_options = nil)
       results = cross_validate(n_folds, custom_options)
       
-      num_samples.times.count { |i| value(i) == results[i] }.to_f/num_samples
+      num_samples.times.collect { |i| value(i) == results[i] ? weight_for(i) : 0 }.inject(:+)
     end
     
     def cross_validate(n_folds = 5, more_options = nil)
@@ -18,8 +18,8 @@ module Svm
     end
     
     def find_best_parameters(n_folds = 5)
-      c_exponents = (-5..15).to_a
-      gamma_exponents = (-15..3).to_a
+      c_exponents = (-1..14).to_a
+      gamma_exponents = (-13..-1).to_a
       
       combinations = c_exponents.product(gamma_exponents)
       
@@ -27,7 +27,7 @@ module Svm
         c = 2 ** comb[0]
         gamma = 2 ** comb[1]
         
-        accuracy_for_cross_validation(n_folds, :c => c, :gamma => gamma)
+        results_for_cross_validation(n_folds, :c => c, :gamma => gamma)
       end
       
       c     = 2**max[0]

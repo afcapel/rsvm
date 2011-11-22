@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Alberto Fernández Capel"]
   s.email       = ["afcapel@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = "Support Vector Machine Gem"
+  s.description = "FFI Ruby wrapper around libsvm"
 
   s.rubyforge_project = "rsvm"
 
@@ -21,4 +21,6 @@ Gem::Specification.new do |s|
   # specify any dependencies here; for example:
   # s.add_development_dependency "rspec"
   s.add_runtime_dependency "ffi"
+  
+  s.extensions << 'ext/libsvm/extconf.rb'
 end

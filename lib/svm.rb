@@ -7,7 +7,7 @@ module Svm
   extend FFI::Library
   extend Svm::Debug
   
-  ffi_lib "lib/libsvm/libsvm"
+  ffi_lib "lib/libsvm/libsvm.#{RbConfig::CONFIG['DLEXT']}"
   
   enum :svm_type, [:c_svc, :nu_svc, :one_class, :epsilon_svr, :nu_svr]
   enum :kernel_type, [:linear, :poly, :rbf, :sigmoid, :precomputed]

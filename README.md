@@ -33,6 +33,7 @@ loaded_model = Svm::Model.load(file.path)
 
 loaded_model.predict([-1, 0, -1]) # -1
 loaded_model.predict([1,  0,  1]) # 1
+```
 
 ## Load data from csv
 

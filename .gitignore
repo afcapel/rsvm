@@ -2,5 +2,6 @@
 .bundle
 Gemfile.lock
 .DS_Store
-lib/libsvm/*
+lib/libsvm/*.bundle
+lib/libsvm/*.so
 pkg/*

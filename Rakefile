@@ -9,7 +9,6 @@ LIB_EXT = RbConfig::CONFIG['DLEXT']
 
 desc "Run unit tests"
 Rake::TestTask.new do |test|
-  test.ruby_opts  << "-w"  # .should == true triggers a lot of warnings
   test.libs       << "test"
   test.test_files =  Dir[ "test/**/*_test.rb"]
   test.verbose    =  false
@@ -26,7 +25,7 @@ file "lib/libsvm/libsvm.#{LIB_EXT}" =>
       ruby "extconf.rb"
       sh "make"
   end
-  
+
   cp "ext/libsvm/libsvm.#{LIB_EXT}", "lib/libsvm/libsvm.#{LIB_EXT}"
 end
 

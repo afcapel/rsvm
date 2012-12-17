@@ -42,10 +42,10 @@ csv_path = File.join(File.dirname(__FILE__), '..', 'fixtures', 'heart_scale.csv'
 problem = Svm::Problem.load_from_csv(csv_path)
 ```
 
+## Scaling data
+
 For the Support Vector Machine to perform well the features in the samples data must
 be of the same order of magnitude. RSVM can scale your data linearly to the [-1, 1] range.
-
-## Scaling data
 
 ```ruby
 data = [
@@ -55,9 +55,12 @@ data = [
 ]
 
 problem = Svm::Problem.new(data, scale: true)
+
 ```
 
 ## Estimate probabilities
+
+You can also estimate probabilities for the diferent labels.
 
 ```ruby
 
@@ -72,6 +75,9 @@ probs = model.predict_probabilities(sample)
 ```
 
 ## Find parameters doing grid search
+
+If you are not sure which parameters to use in your problem RSVM can do a simple grid search
+to find the parameters that perform better doing crossvalidation.
 
 ```ruby
 problem = Svm::Problem.load_from_csv(UNBALANCED_CSV)

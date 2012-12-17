@@ -1,7 +1,7 @@
 #ifndef _LIBSVM_H
 #define _LIBSVM_H
 
-#define LIBSVM_VERSION 311
+#define LIBSVM_VERSION 312
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,6 +20,7 @@ struct svm_problem
 	int l;
 	double *y;
 	struct svm_node **x;
+	double *W; /* instance weight */
 };
 
 enum { C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };	/* svm_type */

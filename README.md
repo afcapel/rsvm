@@ -1,4 +1,5 @@
 # RSVM
+[![Build Status](https://secure.travis-ci.org/afcapel/rsvm.png)](http://travis-ci.org/afcapel/rsvm)
 
 RSVM is a Ruby gem to perform Support Vector Machine classification and regresion
 in Ruby. It is FFI wrapper of libsvm.

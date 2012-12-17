@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = Svm::VERSION
   s.authors     = ["Alberto Fernández Capel"]
   s.email       = ["afcapel@gmail.com"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/afcapel/rsvm"
   s.summary     = "Support Vector Machine Gem"
   s.description = "FFI Ruby wrapper around libsvm"
 
@@ -19,8 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   # specify any dependencies here; for example:
-  # s.add_development_dependency "rspec"
   s.add_runtime_dependency "ffi"
-  
+
   s.extensions << 'ext/libsvm/extconf.rb'
 end
